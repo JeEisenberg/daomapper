@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org/DTD Mapper 3.0" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gavin.mapper.BookMapper">
+
+    <!--  因为有了构造方法了就不用再这定义了
+    <resultMap type="UserInfo" id="userData">
+          <id property="id" column="f_id"/>
+          <result property="name" column="f_name"/>
+          <result property="birth" column="f_birth"/>
+          <result property="salary" column="f_salary"/>
+      </resultMap>-->
+
+  <!--   id要与接口方法名相同
+     SQL语句中的参数名称（#{id}），要与java代码中的参数bean的数据字段相同，这里是UserInfo.id字段
+     type属性可省略 -->
+
+    <sql id="allColumn">BookId,BookName,BookPublish,BookPrice,BookKind,BookCount</sql>
+    <sql id="partColumn">BookName,BookPublish,BookPrice,BookKind,BookCount</sql>
+
+    <select id="findAllBook" resultType="book">
+        select
+        <include refid="allColumn"></include>
+        from bookstore
+    </select>
+
+    <select id="findBookByName" parameterType="string" resultType="book">
+        select
+        <include refid="allColumn"/>
+        from bookstore where BookName like  concat('%',$(BookName),'%')
+    </select>
+
+
+    <insert id="addBook" useGeneratedKeys="true" keyProperty="BookId" parameterType="book">
+        insert into bookstore (<include refid="partColumn"></include>)
+        values(#{BookName},#{BookPublish},#{BookPrice},#{BookKind},#{BookCount})
+    </insert>
+
+    <update id="saleBook" parameterType="saleBook">
+update bookstore set BookCount =BookCount - #{BookCount} where BookId = #{BookId}
+    </update>
+
+    <delete id="delBookById" parameterType="int">
+        delete  from bookstore where  BookId= #{BookId}
+    </delete>
+</mapper>
